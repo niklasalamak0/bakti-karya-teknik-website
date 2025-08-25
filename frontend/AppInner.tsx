@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Services from './components/Services';
@@ -11,6 +11,18 @@ import Footer from './components/Footer';
 
 export default function AppInner() {
   const [activeCategory, setActiveCategory] = useState<'advertising' | 'building'>('advertising');
+
+  // Listen for category changes from mobile buttons
+  useEffect(() => {
+    const handleCategoryChange = (event: CustomEvent) => {
+      setActiveCategory(event.detail as 'advertising' | 'building');
+    };
+
+    window.addEventListener('categoryChange', handleCategoryChange as EventListener);
+    return () => {
+      window.removeEventListener('categoryChange', handleCategoryChange as EventListener);
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">

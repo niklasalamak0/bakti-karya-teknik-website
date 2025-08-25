@@ -47,17 +47,39 @@ export default function Hero({ activeCategory }: HeroProps) {
     <section id="home" className="relative min-h-screen flex items-center bg-gradient-to-br from-orange-50 to-white overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-r from-orange-600/10 to-transparent"></div>
       
-      <div className="container mx-auto px-4 py-20 relative z-10">
+      {/* Mobile category selector - only visible on small screens */}
+      <div className="md:hidden fixed top-16 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-200 p-4">
+        <div className="flex items-center justify-center space-x-3">
+          <Button
+            size="sm"
+            variant={activeCategory === 'advertising' ? 'default' : 'outline'}
+            onClick={() => window.dispatchEvent(new CustomEvent('categoryChange', { detail: 'advertising' }))}
+            className={`text-sm ${activeCategory === 'advertising' ? 'bg-orange-600 hover:bg-orange-700' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+          >
+            Periklanan
+          </Button>
+          <Button
+            size="sm"
+            variant={activeCategory === 'building' ? 'default' : 'outline'}
+            onClick={() => window.dispatchEvent(new CustomEvent('categoryChange', { detail: 'building' }))}
+            className={`text-sm ${activeCategory === 'building' ? 'bg-orange-600 hover:bg-orange-700' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+          >
+            Bangunan & ME
+          </Button>
+        </div>
+      </div>
+      
+      <div className="container mx-auto px-4 pt-24 md:pt-32 pb-20 relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-8">
             <div className="space-y-4">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight">
+              <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-gray-900 leading-tight">
                 {content.title}
               </h1>
-              <p className="text-xl md:text-2xl text-orange-600 font-medium">
+              <p className="text-lg md:text-xl lg:text-2xl text-orange-600 font-medium">
                 {content.subtitle}
               </p>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <p className="text-base md:text-lg text-gray-600 leading-relaxed">
                 {content.description}
               </p>
             </div>
@@ -66,7 +88,7 @@ export default function Hero({ activeCategory }: HeroProps) {
               {content.features.map((feature, index) => (
                 <div key={index} className="flex items-center space-x-3">
                   <CheckCircle className="w-5 h-5 text-orange-600 flex-shrink-0" />
-                  <span className="text-gray-700">{feature}</span>
+                  <span className="text-gray-700 text-sm md:text-base">{feature}</span>
                 </div>
               ))}
             </div>
@@ -74,7 +96,7 @@ export default function Hero({ activeCategory }: HeroProps) {
             <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 size="lg" 
-                className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-3"
+                className="bg-orange-600 hover:bg-orange-700 text-white px-6 md:px-8 py-3"
                 onClick={scrollToContact}
               >
                 Konsultasi Gratis
@@ -83,7 +105,7 @@ export default function Hero({ activeCategory }: HeroProps) {
               <Button 
                 variant="outline" 
                 size="lg" 
-                className="border-orange-600 text-orange-600 hover:bg-orange-50 px-8 py-3"
+                className="border-orange-600 text-orange-600 hover:bg-orange-50 px-6 md:px-8 py-3"
                 onClick={() => {
                   const element = document.getElementById('portfolio');
                   if (element) {
@@ -95,18 +117,18 @@ export default function Hero({ activeCategory }: HeroProps) {
               </Button>
             </div>
 
-            <div className="grid grid-cols-3 gap-8 pt-8 border-t border-gray-200">
+            <div className="grid grid-cols-3 gap-4 md:gap-8 pt-8 border-t border-gray-200">
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">500+</div>
-                <div className="text-sm text-gray-600">Proyek Selesai</div>
+                <div className="text-2xl md:text-3xl font-bold text-orange-600">500+</div>
+                <div className="text-xs md:text-sm text-gray-600">Proyek Selesai</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">15+</div>
-                <div className="text-sm text-gray-600">Tahun Pengalaman</div>
+                <div className="text-2xl md:text-3xl font-bold text-orange-600">15+</div>
+                <div className="text-xs md:text-sm text-gray-600">Tahun Pengalaman</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-orange-600">98%</div>
-                <div className="text-sm text-gray-600">Kepuasan Klien</div>
+                <div className="text-2xl md:text-3xl font-bold text-orange-600">98%</div>
+                <div className="text-xs md:text-sm text-gray-600">Kepuasan Klien</div>
               </div>
             </div>
           </div>
@@ -116,19 +138,19 @@ export default function Hero({ activeCategory }: HeroProps) {
               <img 
                 src={content.image} 
                 alt={content.title}
-                className="w-full h-[600px] object-cover"
+                className="w-full h-[400px] md:h-[500px] lg:h-[600px] object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
             </div>
             
-            <div className="absolute -bottom-6 -left-6 bg-white rounded-xl shadow-lg p-6 max-w-xs">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-orange-600 rounded-full flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-white" />
+            <div className="absolute -bottom-4 -left-4 md:-bottom-6 md:-left-6 bg-white rounded-xl shadow-lg p-4 md:p-6 max-w-xs">
+              <div className="flex items-center space-x-3 md:space-x-4">
+                <div className="w-10 h-10 md:w-12 md:h-12 bg-orange-600 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">Kualitas Terjamin</div>
-                  <div className="text-sm text-gray-600">ISO 9001:2015 Certified</div>
+                  <div className="font-semibold text-gray-900 text-sm md:text-base">Kualitas Terjamin</div>
+                  <div className="text-xs md:text-sm text-gray-600">ISO 9001:2015 Certified</div>
                 </div>
               </div>
             </div>

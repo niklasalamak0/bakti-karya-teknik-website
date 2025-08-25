@@ -32,14 +32,15 @@ export default function Header({ activeCategory, setActiveCategory }: HeaderProp
       isScrolled ? 'bg-white/95 backdrop-blur-md shadow-lg' : 'bg-transparent'
     }`}>
       <div className="container mx-auto px-4">
+        {/* Main navbar */}
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center space-x-4">
-            <div className="text-2xl font-bold text-orange-600">
+            <div className="text-xl md:text-2xl font-bold text-orange-600">
               PT. Bakti Karya Teknik
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden lg:flex items-center space-x-8">
             <a href="#home" onClick={() => scrollToSection('home')} className="text-gray-700 hover:text-orange-600 transition-colors">
               Beranda
             </a>
@@ -57,7 +58,7 @@ export default function Header({ activeCategory, setActiveCategory }: HeaderProp
             </a>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden xl:flex items-center space-x-4">
             <div className="flex items-center space-x-2 text-sm text-gray-600">
               <Phone className="w-4 h-4" />
               <span>+62 21 1234 5678</span>
@@ -71,14 +72,15 @@ export default function Header({ activeCategory, setActiveCategory }: HeaderProp
           <Button
             variant="ghost"
             size="sm"
-            className="md:hidden"
+            className="lg:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </Button>
         </div>
 
-        <div className="flex items-center justify-center space-x-4 py-3 border-t border-gray-200">
+        {/* Category buttons - only show on larger screens */}
+        <div className="hidden md:flex items-center justify-center space-x-4 py-3 border-t border-gray-200">
           <Button
             variant={activeCategory === 'advertising' ? 'default' : 'outline'}
             onClick={() => setActiveCategory('advertising')}
@@ -96,8 +98,9 @@ export default function Header({ activeCategory, setActiveCategory }: HeaderProp
         </div>
       </div>
 
+      {/* Mobile menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
+        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg">
           <nav className="flex flex-col space-y-4 p-4">
             <a href="#home" onClick={() => scrollToSection('home')} className="text-gray-700 hover:text-orange-600 transition-colors">
               Beranda
@@ -114,6 +117,34 @@ export default function Header({ activeCategory, setActiveCategory }: HeaderProp
             <a href="#contact" onClick={() => scrollToSection('contact')} className="text-gray-700 hover:text-orange-600 transition-colors">
               Kontak
             </a>
+            
+            {/* Category buttons in mobile menu */}
+            <div className="pt-4 border-t border-gray-200">
+              <p className="text-sm font-medium text-gray-700 mb-3">Pilih Kategori:</p>
+              <div className="flex flex-col space-y-2">
+                <Button
+                  variant={activeCategory === 'advertising' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setActiveCategory('advertising');
+                    setIsMenuOpen(false);
+                  }}
+                  className={`w-full ${activeCategory === 'advertising' ? 'bg-orange-600 hover:bg-orange-700' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+                >
+                  Periklanan
+                </Button>
+                <Button
+                  variant={activeCategory === 'building' ? 'default' : 'outline'}
+                  onClick={() => {
+                    setActiveCategory('building');
+                    setIsMenuOpen(false);
+                  }}
+                  className={`w-full ${activeCategory === 'building' ? 'bg-orange-600 hover:bg-orange-700' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+                >
+                  Bangunan & ME
+                </Button>
+              </div>
+            </div>
+            
             <div className="pt-4 border-t border-gray-200">
               <div className="flex items-center space-x-2 text-sm text-gray-600 mb-2">
                 <Phone className="w-4 h-4" />
