@@ -8,6 +8,7 @@ import Pricing from './components/Pricing';
 import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
+import AdminPanel from './components/AdminPanel';
 
 export default function AppInner() {
   const [activeCategory, setActiveCategory] = useState<'advertising' | 'building'>('advertising');
@@ -35,6 +36,7 @@ export default function AppInner() {
       <Testimonials />
       <Contact />
       <Footer />
+      <AdminPanel />
     </div>
   );
 }
