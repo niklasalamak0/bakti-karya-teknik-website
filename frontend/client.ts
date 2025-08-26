@@ -33,6 +33,7 @@ const BROWSER = typeof globalThis === "object" && ("window" in globalThis);
  * Client is an API client for the  Encore application.
  */
 export class Client {
+    public readonly auth: auth.ServiceClient
     public readonly company: company.ServiceClient
     private readonly options: ClientOptions
     private readonly target: string
@@ -48,6 +49,7 @@ export class Client {
         this.target = target
         this.options = options ?? {}
         const base = new BaseClient(this.target, this.options)
+        this.auth = new auth.ServiceClient(base)
         this.company = new company.ServiceClient(base)
     }
 
@@ -65,6 +67,11 @@ export class Client {
 }
 
 /**
+ * Import the auth handler to be able to derive the auth type
+ */
+import type { auth as auth_auth } from "~backend/auth/auth";
+
+/**
  * ClientOptions allows you to override any default behaviour within the generated Encore client.
  */
 export interface ClientOptions {
@@ -77,11 +84,52 @@ export interface ClientOptions {
 
     /** Default RequestInit to be used for the client */
     requestInit?: Omit<RequestInit, "headers"> & { headers?: Record<string, string> }
+
+    /**
+     * Allows you to set the authentication data to be used for each
+     * request either by passing in a static object or by passing in
+     * a function which returns a new object for each request.
+     */
+    auth?: RequestType<typeof auth_auth> | AuthDataGenerator
 }
 
 /**
  * Import the endpoint handlers to derive the types for the client.
  */
+import { login as api_auth_login_login } from "~backend/auth/login";
+
+export namespace auth {
+
+    export class ServiceClient {
+        private baseClient: BaseClient
+
+        constructor(baseClient: BaseClient) {
+            this.baseClient = baseClient
+            this.login = this.login.bind(this)
+        }
+
+        /**
+         * Admin login endpoint.
+         */
+        public async login(params: RequestType<typeof api_auth_login_login>): Promise<ResponseType<typeof api_auth_login_login>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/auth/login`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_auth_login_login>
+        }
+    }
+}
+
+/**
+ * Import the endpoint handlers to derive the types for the client.
+ */
+import { createPortfolio as api_company_create_portfolio_createPortfolio } from "~backend/company/create_portfolio";
+import { createPricing as api_company_create_pricing_createPricing } from "~backend/company/create_pricing";
+import { createService as api_company_create_service_createService } from "~backend/company/create_service";
+import { createTestimonial as api_company_create_testimonial_createTestimonial } from "~backend/company/create_testimonial";
+import { deletePortfolio as api_company_delete_portfolio_deletePortfolio } from "~backend/company/delete_portfolio";
+import { deletePricing as api_company_delete_pricing_deletePricing } from "~backend/company/delete_pricing";
+import { deleteService as api_company_delete_service_deleteService } from "~backend/company/delete_service";
+import { deleteTestimonial as api_company_delete_testimonial_deleteTestimonial } from "~backend/company/delete_testimonial";
 import { getContactSubmissions as api_company_get_contact_submissions_getContactSubmissions } from "~backend/company/get_contact_submissions";
 import { getDatabaseInfo as api_company_get_db_info_getDatabaseInfo } from "~backend/company/get_db_info";
 import { getPortfolios as api_company_get_portfolios_getPortfolios } from "~backend/company/get_portfolios";
@@ -91,6 +139,10 @@ import { getTestimonials as api_company_get_testimonials_getTestimonials } from 
 import { inspectData as api_company_inspect_data_inspectData } from "~backend/company/inspect_data";
 import { submitContact as api_company_submit_contact_submitContact } from "~backend/company/submit_contact";
 import { updateContactStatus as api_company_update_contact_status_updateContactStatus } from "~backend/company/update_contact_status";
+import { updatePortfolio as api_company_update_portfolio_updatePortfolio } from "~backend/company/update_portfolio";
+import { updatePricing as api_company_update_pricing_updatePricing } from "~backend/company/update_pricing";
+import { updateService as api_company_update_service_updateService } from "~backend/company/update_service";
+import { updateTestimonial as api_company_update_testimonial_updateTestimonial } from "~backend/company/update_testimonial";
 
 export namespace company {
 
@@ -99,6 +151,14 @@ export namespace company {
 
         constructor(baseClient: BaseClient) {
             this.baseClient = baseClient
+            this.createPortfolio = this.createPortfolio.bind(this)
+            this.createPricing = this.createPricing.bind(this)
+            this.createService = this.createService.bind(this)
+            this.createTestimonial = this.createTestimonial.bind(this)
+            this.deletePortfolio = this.deletePortfolio.bind(this)
+            this.deletePricing = this.deletePricing.bind(this)
+            this.deleteService = this.deleteService.bind(this)
+            this.deleteTestimonial = this.deleteTestimonial.bind(this)
             this.getContactSubmissions = this.getContactSubmissions.bind(this)
             this.getDatabaseInfo = this.getDatabaseInfo.bind(this)
             this.getPortfolios = this.getPortfolios.bind(this)
@@ -108,6 +168,82 @@ export namespace company {
             this.inspectData = this.inspectData.bind(this)
             this.submitContact = this.submitContact.bind(this)
             this.updateContactStatus = this.updateContactStatus.bind(this)
+            this.updatePortfolio = this.updatePortfolio.bind(this)
+            this.updatePricing = this.updatePricing.bind(this)
+            this.updateService = this.updateService.bind(this)
+            this.updateTestimonial = this.updateTestimonial.bind(this)
+        }
+
+        /**
+         * Creates a new portfolio item.
+         */
+        public async createPortfolio(params: RequestType<typeof api_company_create_portfolio_createPortfolio>): Promise<ResponseType<typeof api_company_create_portfolio_createPortfolio>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/portfolios`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_create_portfolio_createPortfolio>
+        }
+
+        /**
+         * Creates a new pricing package.
+         */
+        public async createPricing(params: RequestType<typeof api_company_create_pricing_createPricing>): Promise<ResponseType<typeof api_company_create_pricing_createPricing>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/pricing`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_create_pricing_createPricing>
+        }
+
+        /**
+         * Creates a new service.
+         */
+        public async createService(params: RequestType<typeof api_company_create_service_createService>): Promise<ResponseType<typeof api_company_create_service_createService>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/services`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_create_service_createService>
+        }
+
+        /**
+         * Creates a new testimonial.
+         */
+        public async createTestimonial(params: RequestType<typeof api_company_create_testimonial_createTestimonial>): Promise<ResponseType<typeof api_company_create_testimonial_createTestimonial>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/testimonials`, {method: "POST", body: JSON.stringify(params)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_create_testimonial_createTestimonial>
+        }
+
+        /**
+         * Deletes a portfolio item.
+         */
+        public async deletePortfolio(params: { id: number }): Promise<ResponseType<typeof api_company_delete_portfolio_deletePortfolio>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/portfolios/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_delete_portfolio_deletePortfolio>
+        }
+
+        /**
+         * Deletes a pricing package.
+         */
+        public async deletePricing(params: { id: number }): Promise<ResponseType<typeof api_company_delete_pricing_deletePricing>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/pricing/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_delete_pricing_deletePricing>
+        }
+
+        /**
+         * Deletes a service.
+         */
+        public async deleteService(params: { id: number }): Promise<ResponseType<typeof api_company_delete_service_deleteService>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/services/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_delete_service_deleteService>
+        }
+
+        /**
+         * Deletes a testimonial.
+         */
+        public async deleteTestimonial(params: { id: number }): Promise<ResponseType<typeof api_company_delete_testimonial_deleteTestimonial>> {
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/testimonials/${encodeURIComponent(params.id)}`, {method: "DELETE", body: undefined})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_delete_testimonial_deleteTestimonial>
         }
 
         /**
@@ -202,7 +338,7 @@ export namespace company {
         }
 
         /**
-         * Submits a contact form.
+         * Submits a contact form and saves to Google Sheets.
          */
         public async submitContact(params: RequestType<typeof api_company_submit_contact_submitContact>): Promise<ResponseType<typeof api_company_submit_contact_submitContact>> {
             // Now make the actual call to the API
@@ -222,6 +358,80 @@ export namespace company {
             // Now make the actual call to the API
             const resp = await this.baseClient.callTypedAPI(`/contact-submissions/${encodeURIComponent(params.id)}/status`, {method: "PUT", body: JSON.stringify(body)})
             return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_update_contact_status_updateContactStatus>
+        }
+
+        /**
+         * Updates an existing portfolio item.
+         */
+        public async updatePortfolio(params: RequestType<typeof api_company_update_portfolio_updatePortfolio>): Promise<ResponseType<typeof api_company_update_portfolio_updatePortfolio>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                category:       params.category,
+                clientName:     params.clientName,
+                completionDate: params.completionDate,
+                description:    params.description,
+                imageUrl:       params.imageUrl,
+                location:       params.location,
+                title:          params.title,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/portfolios/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_update_portfolio_updatePortfolio>
+        }
+
+        /**
+         * Updates an existing pricing package.
+         */
+        public async updatePricing(params: RequestType<typeof api_company_update_pricing_updatePricing>): Promise<ResponseType<typeof api_company_update_pricing_updatePricing>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                category:   params.category,
+                features:   params.features,
+                isPopular:  params.isPopular,
+                name:       params.name,
+                priceRange: params.priceRange,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/pricing/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_update_pricing_updatePricing>
+        }
+
+        /**
+         * Updates an existing service.
+         */
+        public async updateService(params: RequestType<typeof api_company_update_service_updateService>): Promise<ResponseType<typeof api_company_update_service_updateService>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                category:    params.category,
+                description: params.description,
+                features:    params.features,
+                icon:        params.icon,
+                name:        params.name,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/services/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_update_service_updateService>
+        }
+
+        /**
+         * Updates an existing testimonial.
+         */
+        public async updateTestimonial(params: RequestType<typeof api_company_update_testimonial_updateTestimonial>): Promise<ResponseType<typeof api_company_update_testimonial_updateTestimonial>> {
+            // Construct the body with only the fields which we want encoded within the body (excluding query string or header fields)
+            const body: Record<string, any> = {
+                clientName:  params.clientName,
+                comment:     params.comment,
+                company:     params.company,
+                projectType: params.projectType,
+                rating:      params.rating,
+            }
+
+            // Now make the actual call to the API
+            const resp = await this.baseClient.callTypedAPI(`/testimonials/${encodeURIComponent(params.id)}`, {method: "PUT", body: JSON.stringify(body)})
+            return JSON.parse(await resp.text(), dateReviver) as ResponseType<typeof api_company_update_testimonial_updateTestimonial>
         }
     }
 }
@@ -480,6 +690,11 @@ type CallParameters = Omit<RequestInit, "headers"> & {
     query?: Record<string, string | string[]>
 }
 
+// AuthDataGenerator is a function that returns a new instance of the authentication data required by this API
+export type AuthDataGenerator = () =>
+  | RequestType<typeof auth_auth>
+  | Promise<RequestType<typeof auth_auth> | undefined>
+  | undefined;
 
 // A fetcher is the prototype for the inbuilt Fetch function
 export type Fetcher = typeof fetch;
@@ -491,6 +706,7 @@ class BaseClient {
     readonly fetcher: Fetcher
     readonly headers: Record<string, string>
     readonly requestInit: Omit<RequestInit, "headers"> & { headers?: Record<string, string> }
+    readonly authGenerator?: AuthDataGenerator
 
     constructor(baseURL: string, options: ClientOptions) {
         this.baseURL = baseURL
@@ -510,9 +726,41 @@ class BaseClient {
         } else {
             this.fetcher = boundFetch
         }
+
+        // Setup an authentication data generator using the auth data token option
+        if (options.auth !== undefined) {
+            const auth = options.auth
+            if (typeof auth === "function") {
+                this.authGenerator = auth
+            } else {
+                this.authGenerator = () => auth
+            }
+        }
     }
 
     async getAuthData(): Promise<CallParameters | undefined> {
+        let authData: RequestType<typeof auth_auth> | undefined;
+
+        // If authorization data generator is present, call it and add the returned data to the request
+        if (this.authGenerator) {
+            const mayBePromise = this.authGenerator();
+            if (mayBePromise instanceof Promise) {
+                authData = await mayBePromise;
+            } else {
+                authData = mayBePromise;
+            }
+        }
+
+        if (authData) {
+            const data: CallParameters = {};
+
+            data.headers = makeRecord<string, string>({
+                authorization: authData.authorization,
+            });
+
+            return data;
+        }
+
         return undefined;
     }
 

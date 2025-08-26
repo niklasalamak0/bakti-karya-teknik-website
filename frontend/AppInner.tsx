@@ -9,9 +9,13 @@ import Testimonials from './components/Testimonials';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import AdminPanel from './components/AdminPanel';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
 
 export default function AppInner() {
   const [activeCategory, setActiveCategory] = useState<'advertising' | 'building'>('advertising');
+  const [adminUser, setAdminUser] = useState<any>(null);
+  const [adminToken, setAdminToken] = useState<string>('');
 
   // Listen for category changes from mobile buttons
   useEffect(() => {
@@ -25,6 +29,16 @@ export default function AppInner() {
     };
   }, []);
 
+  const handleAdminLogin = (user: any, token: string) => {
+    setAdminUser(user);
+    setAdminToken(token);
+  };
+
+  const handleAdminLogout = () => {
+    setAdminUser(null);
+    setAdminToken('');
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Header activeCategory={activeCategory} setActiveCategory={setActiveCategory} />
@@ -37,6 +51,16 @@ export default function AppInner() {
       <Contact />
       <Footer />
       <AdminPanel />
+      
+      {adminUser ? (
+        <AdminDashboard 
+          user={adminUser} 
+          token={adminToken} 
+          onLogout={handleAdminLogout} 
+        />
+      ) : (
+        <AdminLogin onLogin={handleAdminLogin} />
+      )}
     </div>
   );
 }
